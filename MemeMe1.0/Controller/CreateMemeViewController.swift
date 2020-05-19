@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  CreateMemeViewController.swift
 //  MemeMe1.0
 //
 //  Created by Vanessa on 5/16/20.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate,
+class CreateMemeViewController: UIViewController, UIImagePickerControllerDelegate,
 UINavigationControllerDelegate, UITextFieldDelegate {
     @IBOutlet weak var imagePickerView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
@@ -21,12 +21,6 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     // use to indicate which textField is being active because we only move keyboard for bottom textfield
     var activeField: UITextField?
     var firstTextEdit = (top: false, bottom: false)
-    struct Meme {
-        var topText: String
-        var bottomText: String
-        var originalImage: UIImage
-        var memedImage: UIImage
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -170,7 +164,11 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     
     func save(_ memedImage: UIImage) {
         // Create the meme
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        
+        // add the meme to the meme array in AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     func generateMemedImage() -> UIImage {
