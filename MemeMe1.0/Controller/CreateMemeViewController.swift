@@ -57,7 +57,8 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         
         activityController.completionWithItemsHandler = { (activity, success, items, error) in
            if (success) {
-               self.save(memedImage)
+            self.save(memedImage)
+            self.dismiss(animated: true, completion: nil)
            }
         }
         self.present(activityController, animated: true, completion: nil)
@@ -167,8 +168,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
         
         // add the meme to the meme array in AppDelegate
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.memes.append(meme)
+        (UIApplication.shared.delegate as! AppDelegate).memes.append(meme)
     }
     
     func generateMemedImage() -> UIImage {
