@@ -26,28 +26,19 @@ class MemeCollectionViewController: UICollectionViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let space:CGFloat = 3.0
-        let widthDimension = (view.frame.size.width - (2 * space)) / 3.0
-        let heightDimension = (view.frame.size.height - (2 * space)) / 3.0
-    
-        flowLayout.minimumInteritemSpacing = space
-        flowLayout.minimumLineSpacing = space
-        flowLayout.itemSize = CGSize(width: widthDimension, height: heightDimension)
+        setUpFlowLayout()
     }
     
-    // MARK: Table View Data Source
-    
+    // MARK: Collection View Data Source
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return memes.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! MemeCollectionViewCell
         let meme = memes[(indexPath as NSIndexPath).row]
         
         cell.memeImageView?.image = meme.memedImage
-        
         return cell
     }
     
@@ -55,6 +46,20 @@ class MemeCollectionViewController: UICollectionViewController {
         let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
         detailController.meme = self.memes[(indexPath as NSIndexPath).row]
         self.navigationController!.pushViewController(detailController, animated: true)
+    }
+    
+    // MARK: Helpers
+    func setUpFlowLayout() {
+        let numItemPerRow: CGFloat = 3
+        let lineSpacing: CGFloat = 5
+        let interItemSpacing: CGFloat = 5
+        let width = (collectionView.frame.width - (numItemPerRow - 1) * interItemSpacing) / numItemPerRow
+        let height = width
+        flowLayout.itemSize = CGSize(width: width, height: height)
+        flowLayout.sectionInset = UIEdgeInsets.zero
+        flowLayout.scrollDirection = .vertical
+        flowLayout.minimumLineSpacing = lineSpacing
+        flowLayout.minimumInteritemSpacing = interItemSpacing
     }
 }
 

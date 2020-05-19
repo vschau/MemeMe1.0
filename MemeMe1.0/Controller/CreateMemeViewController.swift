@@ -8,8 +8,8 @@
 
 import UIKit
 
-class CreateMemeViewController: UIViewController, UIImagePickerControllerDelegate,
-UINavigationControllerDelegate, UITextFieldDelegate {
+class CreateMemeViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+    // MARK: outlets and vars
     @IBOutlet weak var imagePickerView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
@@ -18,10 +18,9 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     @IBOutlet weak var topToolbar: UIToolbar!
     @IBOutlet weak var bottomToolbar: UIToolbar!
     
-    // use to indicate which textField is being active because we only move keyboard for bottom textfield
-    var activeField: UITextField?
     var firstTextEdit = (top: false, bottom: false)
 
+    // MARK: Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         shareButton.isEnabled = false
@@ -40,12 +39,15 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         unsubscribeKeyboardNotifications()
     }
 
+    // MARK: IBActions
     // used for both camera and album
     @IBAction func pickAnImage(_ sender: Any) {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         let button = sender as! UIBarButtonItem
         imagePicker.sourceType = button.tag == 0 ? .camera : .photoLibrary
+        // will show a rectangular to allow editting after picking an image from album
+        imagePicker.allowsEditing = true
         present(imagePicker, animated: true, completion: nil)
     }
     
@@ -70,11 +72,10 @@ UINavigationControllerDelegate, UITextFieldDelegate {
        bottomTextField.text = "BOTTOM"
     }
     
-    // MARK: UITextFieldDelegate
+    // MARK: UITextFieldDelegate - text field
     func textFieldDidBeginEditing(_ textField: UITextField) {
         // bottom text field
         if textField.tag == 1 {
-            activeField = textField
             // only reset if it's first edit or firstTextEdit.bottom = false
             if firstTextEdit.bottom == false {
                 textField.text = ""
@@ -88,22 +89,20 @@ UINavigationControllerDelegate, UITextFieldDelegate {
             }
         }
     }
-
-    func textFieldDidEndEditing(_ textField: UITextField){
-        if textField.tag == 1 {
-            activeField = nil
-        }
-    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     
-    // MARK: UIImagePickerControllerDelegate
+    // MARK: UIImagePickerControllerDelegate - image view
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            imagePickerView.contentMode = .scaleAspectFit
+        // save cropped image
+        if let pickedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+             imagePickerView.image = pickedImage
+        }
+        else if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            //imagePickerView.contentMode = .scaleAspectFit
             imagePickerView.image = pickedImage
         }
 
@@ -127,13 +126,13 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     }
 
     @objc func keyboardWillShow(_ notification:Notification) {
-        if self.activeField != nil {
-            view.frame.origin.y = -getKeyboardHeight(notification)
+        if (bottomTextField.isFirstResponder) {
+            view.frame.origin.y -= getKeyboardHeight(notification)
         }
     }
     
     @objc func keyboardWillHide(_ notification:Notification) {
-        if self.activeField != nil {
+        if (bottomTextField.isFirstResponder) {
             view.frame.origin.y = 0
         }
     }
