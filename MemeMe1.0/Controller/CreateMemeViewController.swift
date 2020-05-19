@@ -53,15 +53,14 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         let memedImage: UIImage = generateMemedImage()
 
         // generate the meme
-        let activityController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
+        let activityViewController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
         
-        activityController.completionWithItemsHandler = { (activity, success, items, error) in
-           if (success) {
-            self.save(memedImage)
-            self.dismiss(animated: true, completion: nil)
-           }
+        activityViewController.completionWithItemsHandler = { (activity, success, items, error) in
+            if (success) {
+                self.save(memedImage)
+            }
         }
-        self.present(activityController, animated: true, completion: nil)
+        self.present(activityViewController, animated: true, completion: nil)
     }
     
     @IBAction func discardMeme(_ sender: Any) {
@@ -169,6 +168,9 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         
         // add the meme to the meme array in AppDelegate
         (UIApplication.shared.delegate as! AppDelegate).memes.append(meme)
+        
+        // Making sure we only dismiss after the file is added
+        self.dismiss(animated: true, completion: nil)
     }
     
     func generateMemedImage() -> UIImage {
